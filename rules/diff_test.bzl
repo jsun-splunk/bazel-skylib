@@ -35,7 +35,11 @@ def _diff_test_impl(ctx):
 @echo off
 SETLOCAL ENABLEEXTENSIONS
 SETLOCAL ENABLEDELAYEDEXPANSION
-set MF=%RUNFILES_MANIFEST_FILE:/=\\%
+if not "%RUNFILES_MANIFEST_FILE%"=="" (
+  set MF=%RUNFILES_MANIFEST_FILE:/=\\%
+) else (
+  set MF=""
+)
 set PATH=%SYSTEMROOT%\\system32
 set F1={file1}
 set F2={file2}
@@ -79,13 +83,13 @@ if "!RF2!" equ "" (
     exit /b 1
   )
 )
-fc.exe 2>NUL 1>NUL /B "!RF1!" "!RF2!"
+fc.exe "!RF1!" "!RF2!"
 if %ERRORLEVEL% neq 0 (
   if %ERRORLEVEL% equ 1 (
     echo>&2 FAIL: files "{file1}" and "{file2}" differ. {fail_msg}
     exit /b 1
   ) else (
-    fc.exe /B "!RF1!" "!RF2!"
+    fc.exe "!RF1!" "!RF2!"
     exit /b %errorlevel%
   )
 )
